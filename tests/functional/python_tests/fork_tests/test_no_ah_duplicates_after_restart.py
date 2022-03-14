@@ -3,12 +3,10 @@ from test_tools import logger
 from .local_tools import assert_no_duplicates
 
 
-def test_no_duplicates_in_account_history_plugin_after_restart(world_with_witnesses):
-    world = world_with_witnesses
-
+def test_no_duplicates_in_account_history_plugin_after_restart(prepared_networks):
     # TRIGGER
     # We restart one of nodes.
-    api_node = world.network('Alpha').node('ApiNode0')
+    api_node = prepared_networks['Alpha']['ApiNode']
     logger.info("Restarting api node...")
     api_node.restart()
 

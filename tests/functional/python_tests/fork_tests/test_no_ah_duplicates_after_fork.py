@@ -3,13 +3,12 @@ from test_tools import logger
 from .local_tools import assert_no_duplicates
 
 
-def test_no_duplicates_in_account_history_plugin_after_fork(world_with_witnesses):
-    world = world_with_witnesses
+def test_no_duplicates_in_account_history_plugin_after_fork(prepared_networks):
+    alpha_net = prepared_networks['Alpha']['Network']
+    beta_net = prepared_networks['Beta']['Network']
 
-    alpha_net = world.network('Alpha')
-    beta_net = world.network('Beta')
-    alpha_node = alpha_net.node('ApiNode0')
-    beta_node = beta_net.node('ApiNode0')
+    alpha_node = prepared_networks['Alpha']['ApiNode']
+    beta_node = prepared_networks['Beta']['ApiNode']
 
     # TRIGGER
     # Using newtork_node_api we block communication between alpha and beta parts.
@@ -25,7 +24,7 @@ def test_no_duplicates_in_account_history_plugin_after_fork(world_with_witnesses
 
 def trigger_fork(alpha_net, beta_net):
     alpha_node = alpha_net.node('ApiNode0')
-    beta_node = beta_net.node('ApiNode0')
+    beta_node = beta_net.node('ApiNode1')
 
     alpha_net.disconnect_from(beta_net)
     logger.info(f'Disconnected {alpha_net} and {beta_net}')

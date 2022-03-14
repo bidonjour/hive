@@ -1,7 +1,8 @@
 import re
 from subprocess import PIPE, run as run_executable
 
-from test_tools import logger, paths_to_executables
+import test_tools as tt
+from test_tools import paths_to_executables
 
 
 def test_help_option():
@@ -17,7 +18,7 @@ def test_help_option():
     stdout = process.stdout.decode('utf-8')
     args_founded = [arg for arg in stdout.split() if "--" in arg]
     diff = list(set(args_founded) ^ set(only_args_to_be_founded))
-    logger.info(f'found: {diff}')
+    tt.logger.info(f'found: {diff}')
 
     assert len(diff) == 0
 

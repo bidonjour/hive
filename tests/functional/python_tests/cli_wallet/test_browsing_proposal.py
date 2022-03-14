@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from test_tools import Account
-from test_tools.wallet import Wallet
+import test_tools as tt
+
 from .shared_utilites import *
 from .shared_utilites import prepared_proposal_data_with_id as proposal_data_t
 from .conftest import create_funded_account
@@ -12,7 +12,7 @@ proposals_order_by_values = ["by_creator", "by_start_date", "by_end_date", "by_t
 votes_order_by_values = ["by_voter_proposal"]
 order_type_values = ["ascending", "descending"]
 
-def test_list_proposals(wallet: Wallet, creator_proposal_id : proposal_data_t, creator : Account):
+def test_list_proposals(wallet: tt.Wallet, creator_proposal_id : proposal_data_t, creator : tt.Account):
   start_point_before_test = format_datetime(dt.now())
 
   name_order_by = [proposals_order_by_values[0]]
@@ -36,7 +36,7 @@ def test_list_proposals(wallet: Wallet, creator_proposal_id : proposal_data_t, c
         )
 
 
-def test_list_voter_proposal(wallet : Wallet, creator_proposal_id : proposal_data_t, creator : Account):
+def test_list_voter_proposal(wallet : tt.Wallet, creator_proposal_id : proposal_data_t, creator : tt.Account):
   wallet.api.update_proposal_votes(voter=creator.name, proposals=[creator_proposal_id.id], approve=True)
 
   for active in active_values:
@@ -52,7 +52,7 @@ def test_list_voter_proposal(wallet : Wallet, creator_proposal_id : proposal_dat
         )
 
 
-def test_find_proposals(wallet : Wallet, creator : Account):
+def test_find_proposals(wallet : tt.Wallet, creator : tt.Account):
   ACCOUNTS_COUNT = 8
   PROPOSAL_ID_TEST_SCHEME = [[1], [2], [3], [1,2], [1,2,3], [2,3], [3,4], [4,5], [1,2,3,4,5,6,7]]
 

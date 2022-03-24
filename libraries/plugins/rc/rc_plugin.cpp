@@ -31,7 +31,7 @@ namespace hive { namespace plugins { namespace rc {
 
 using hive::plugins::block_data_export::block_data_export_plugin;
 
-void count_resources( const optional_automated_action& action, count_resources_result& result );
+void count_resources( const optional_automated_action& action, count_resources_result& result, const fc::time_point_sec now );
 account_name_type get_resource_user( const optional_automated_action& action );
 
 namespace detail {
@@ -323,7 +323,7 @@ void rc_plugin_impl::on_post_apply_transaction( const transaction_notification& 
   rc_transaction_info tx_info;
 
   // How many resources does the transaction use?
-  count_resources( note.transaction, tx_info.usage );
+  count_resources( note.transaction, tx_info.usage, _db.head_block_time() );
 
   // How many RC does this transaction cost?
   int64_t total_cost = calculate_cost_of_resources( gpo.total_vesting_shares.amount.value, tx_info );
@@ -1147,7 +1147,7 @@ void rc_plugin_impl::on_post_apply_optional_action( const optional_action_notifi
   rc_optional_action_info opt_action_info;
 
   // How many resources do the optional actions use?
-  count_resources( note.action, opt_action_info.usage );
+  count_resources( note.action, opt_action_info.usage, _db.head_block_time() );
 
   // How many RC do these actions cost?
   int64_t total_cost = calculate_cost_of_resources( gpo.total_vesting_shares.amount.value, opt_action_info );

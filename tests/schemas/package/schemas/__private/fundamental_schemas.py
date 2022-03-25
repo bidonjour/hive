@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import jsonschema
 
@@ -55,6 +55,39 @@ class Null(Schema):
 
     def _create_core_of_schema(self) -> Dict[str, Any]:
         return {'type': 'null'}
+
+
+class Map(Schema):
+    def __init__(self, properties: Dict, required_keys: Optional[List[str]] = None,
+                 allow_additional_properties: bool = False, **options: Any):
+        """
+        :param properties: A set of rules included in the schema. Takes dictionary (key-value) values.
+        key: -> key in schema, value: -> rule of key.
+        :param required_keys: It takes the form of a list.
+        The list should include the keys that are required for valid validation.
+        :param allow_additional_properties: By default, all keys are required.
+        Additional number of keys will lead to incorrect validation,
+        unless you use the `allow_additional_properties parameter`.
+        Takes the value of True, False. It allows for successful validation of keys,
+        that are not included in the schema.
+        :param options: Other options that can be given in the form of a dictionary
+        """
+        super().__init__(options)
+        self.__allow_additional_properties: bool = allow_additional_properties
+        self.__properties = properties
+        self.__required_keys: List[str] = list(self.__properties.keys()) if required_keys is None else required_keys
+
+    def _create_core_of_schema(self) -> Dict[str, Any]:
+        properties_as_dicts = self.__properties.copy()
+        for key, schema in self.__properties.items():
+            if isinstance(schema, Schema):
+                properties_as_dicts[key] = schema._create_schema()
+        return {
+            'type': 'object',
+            'properties': properties_as_dicts,
+            'required': self.__required_keys,
+            'additionalProperties': self.__allow_additional_properties
+        }
 
 
 class String(Schema):

@@ -49,6 +49,19 @@ class Float(Schema):
         return {'type': 'number'}
 
 
+class Int(Schema):
+    def __init__(self, **options: Any):
+        super().__init__(options)
+
+    def _create_core_of_schema(self) -> [str, Any]:
+        return {
+            'anyOf': [
+                {'type': 'integer'},
+                {'type': 'string', 'pattern': r'^\d+$'},
+            ]
+        }
+
+
 class Null(Schema):
     def __init__(self, **options: Any):
         super().__init__(options)

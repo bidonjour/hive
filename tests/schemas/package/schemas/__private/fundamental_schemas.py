@@ -33,6 +33,36 @@ class Any_(Schema):
         return {}
 
 
+class Array(Schema):
+    def __init__(self, *items, unique_items: bool = False, **options: Any):
+        super().__init__(options)
+        self.__items = list(items)
+        self.__unique_items = unique_items
+
+    def _create_core_of_schema(self) -> Dict[str, Any]:
+        items_as_list = []
+        for schema in self.__items:
+            if isinstance(schema, Schema):
+                items_as_list.append(schema._create_schema())
+        if len(items_as_list) > 1:
+            return {
+                'type': 'array',
+                'items': {
+                    'oneOf': items_as_list
+                },
+                'uniqueItems': self.__unique_items,
+            }
+        elif len(items_as_list) == 0:
+            return {
+                'type': 'array',
+            }
+        return {
+            'type': 'array',
+            'items': items_as_list[0],
+            'uniqueItems': self.__unique_items,
+        }
+
+
 class Bool(Schema):
     def __init__(self, **options: Any):
         super().__init__(options)

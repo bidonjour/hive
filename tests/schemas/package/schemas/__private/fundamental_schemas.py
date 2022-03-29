@@ -63,6 +63,29 @@ class Array(Schema):
         }
 
 
+class ArrayStrict(Schema):
+    def __init__(self, *prefix_items, unique_items: bool = False, **options: Any):
+        """ArrayStrict is useful when the array is a collection of items,
+        where each has a different schema and the ordinal index of each item is meaningful."""
+        super().__init__(options)
+        self.__prefix_items = list(prefix_items)
+        self.__unique_items = unique_items
+
+    def _create_core_of_schema(self) -> Dict[str, Any]:
+        prefix_items_as_list = self.__prefix_items
+        for index, schema in enumerate(prefix_items_as_list):
+            if isinstance(schema, Schema):
+                prefix_items_as_list[index] = schema._create_schema()
+
+        return {
+            'type': 'array',
+            'prefixItems': prefix_items_as_list,
+            'uniqueItems': self.__unique_items,
+            "minItems": len(prefix_items_as_list),
+            'maxItems': len(prefix_items_as_list),
+        }
+
+
 class Bool(Schema):
     def __init__(self, **options: Any):
         super().__init__(options)

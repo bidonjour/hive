@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-import jsonschema
+from schemas.__private import custom_validate
 
 
 class Schema:
@@ -8,7 +8,7 @@ class Schema:
         self._options = options
 
     def validate(self, instance) -> None:
-        jsonschema.validate(
+        custom_validate.custom_validate(
             instance=instance,
             schema=self._create_schema(),
         )

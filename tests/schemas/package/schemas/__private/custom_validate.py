@@ -13,6 +13,7 @@ def custom_validate(schema, instance):
     # Build a new type checkers
     custom_types = default_validator.TYPE_CHECKER.redefine_many(
         definitions={
+            'date': datetime_checker.check_date,
         })
     # Build a validator with the new type checkers
     custom_validator = jsonschema.validators.extend(default_validator, type_checker=custom_types)

@@ -94,6 +94,14 @@ class Bool(Schema):
         return {'type': 'boolean'}
 
 
+class Date(Schema):
+    def __init__(self, **options: Any):
+        super().__init__(options)
+
+    def _create_core_of_schema(self) -> Dict[str, Any]:
+        return {'type': 'date'}
+
+
 class Float(Schema):
     def __init__(self, **options: Any):
         super().__init__(options)

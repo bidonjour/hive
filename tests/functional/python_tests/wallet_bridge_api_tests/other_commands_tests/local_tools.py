@@ -1,5 +1,11 @@
 from test_tools import Asset
 
+
+def add_quotes_to_bool_or_numeric(argument):
+    if argument is type(int) or type(bool):
+        return f'{argument}'
+
+
 def prepare_node_with_set_withdraw_vesting_route(wallet):
     with wallet.in_single_transaction():
         wallet.api.create_account('initminer', 'alice', '{}')

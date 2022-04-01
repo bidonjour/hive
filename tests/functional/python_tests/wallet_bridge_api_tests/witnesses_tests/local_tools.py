@@ -1,6 +1,10 @@
 from test_tools import Account, Asset, logger, Wallet
 
 
+def add_quotes_to_bool_or_numeric(argument):
+    if argument is type(int) or type(bool):
+        return f'{argument}'
+
 def prepare_node_with_witnesses(world, witnesses_names):
     node = world.create_init_node()
     for name in witnesses_names:

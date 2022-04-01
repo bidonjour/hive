@@ -2,6 +2,8 @@ import pytest
 
 from test_tools import exceptions
 
+import local_tools
+
 ACCOUNTS = [f'account-{i}' for i in range(10)]
 
 # TODO BUG LIST!
@@ -13,11 +15,14 @@ ACCOUNTS = [f'account-{i}' for i in range(10)]
 
 2. Problem with running wallet_bridge_api.get_account_history with incorrect argument type 
    (putting bool as limit ). I think, in this situation program should throw an exception.  (# BUG2) 
+   
+3. Problem with calling wallet_bridge_api.find_proposals with arguments in quotes
+     Sent: {"jsonrpc": "2.0", "id": 1, "method": "wallet_bridge_api.get_account_history", "params": [["account-0", "4294967295", "1000"]]}
+     Received: 'message': "Assert Exception:arguments.get_array()[1].is_numeric(): from (numeric type) is required as second argument"
+     (# BUG3)
 """
 
-
-@pytest.mark.parametrize(
-    'account, from_, limit', [
+CORRECT_VALUES = [
         # ACCOUNT
         (ACCOUNTS[0], -1, 1000),
         ('non-exist-acc', -1, 1000),
@@ -27,11 +32,16 @@ ACCOUNTS = [f'account-{i}' for i in range(10)]
         (ACCOUNTS[0], 4294967295, 1000),   # maximal value of uint32
         (ACCOUNTS[0], 2, 1),
         (ACCOUNTS[0], -1, 1000),
+        # (ACCOUNTS[0], True, 1000),  # bool is treat like numeric (0:1)   # BUG3
 
-        # #LIMIT
+        # LIMIT
         (ACCOUNTS[0], -1, 0),
         (ACCOUNTS[0], -1, 1000),
-    ]
+        (ACCOUNTS[0], -1, True),   # bool is treat like numeric (0:1)
+]
+
+@pytest.mark.parametrize(
+    'account, from_, limit', CORRECT_VALUES
 )
 def tests_with_correct_value(node, wallet, account, from_, limit):
     # TODO Add pattern test
@@ -39,6 +49,20 @@ def tests_with_correct_value(node, wallet, account, from_, limit):
 
     node.wait_number_of_blocks(21)  # wait 21 block to appear transactions in 'get account history'
     response = node.api.wallet_bridge.get_account_history(account, from_, limit)
+
+
+#BUG3  (NOW IS REPAIR IN OTHER MERGE REQUEST. ABLE TO WORK AFTER REBASE)
+# @pytest.mark.parametrize(
+#     'account, from_, limit', CORRECT_VALUES
+# )
+# def tests_with_correct_value_in_quote(node, wallet, account, from_, limit):
+#     wallet.create_accounts(len(ACCOUNTS))
+#
+#     from_ = local_tools.add_quotes_to_bool_or_numeric(from_)
+#     limit = local_tools.add_quotes_to_bool_or_numeric(limit)
+#
+#     node.wait_number_of_blocks(21)  # wait 21 block to appear transactions in 'get account history'
+#     response = node.api.wallet_bridge.get_account_history(account, from_, limit)
 
 
 @pytest.mark.parametrize(

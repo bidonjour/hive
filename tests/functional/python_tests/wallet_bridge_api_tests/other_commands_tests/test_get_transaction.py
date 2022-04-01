@@ -2,6 +2,8 @@ import pytest
 
 from test_tools import exceptions
 
+import local_tools
+
 # TODO BUG LIST!
 """
 1. Problem with running wallet_bridge_api.get_transaction with additional argument.  Method return exception:
@@ -13,6 +15,14 @@ def test_with_correct_value(node, wallet):
     # TODO Add pattern test
     transaction_id = wallet.api.create_account('initminer', 'alice', '{}')['transaction_id']
     node.wait_number_of_blocks(21)
+    response = node.api.wallet_bridge.get_transaction(transaction_id)
+
+
+def test_with_correct_value_in_quotes(node, wallet):
+    transaction_id = wallet.api.create_account('initminer', 'alice', '{}')['transaction_id']
+    node.wait_number_of_blocks(21)
+    transaction_id = local_tools.add_quotes_to_bool_or_numeric(transaction_id)
+
     response = node.api.wallet_bridge.get_transaction(transaction_id)
 
 
